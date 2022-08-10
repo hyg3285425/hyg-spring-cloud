@@ -16,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 @Component
 public class CustomErrorDecoder implements ErrorDecoder {
+
     @Override
     public Exception decode(String methodKey, Response response) {
         Exception exception = null;
