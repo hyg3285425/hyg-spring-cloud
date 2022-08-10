@@ -1,0 +1,152 @@
+server:
+  # 设置服务的端口
+  port: 8079
+
+# 配置actuator暴露的端点以及暴露的颗粒度
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    # feign日志基于debug的日志级别
+    com.yunnk.springcloudproject.FeignClient: debug
+    # 将nacos的日志级别设高，排除一些无用的日志
+    com.alibaba.nacos: error
+
+spring:
+  application:
+    name: service-one
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #数据库账号
+    username: root
+    #数据库密码
+    password: 162-123456
+    #数据库url
+    url: jdbc:mysql://127.0.0.1:3306/service-one?useUnicode=true&characterEncoding=utf8&useSSL=false
+  jpa:
+    database: mysql
+    show-sql: true
+    generate-ddl: true
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  main:
+    allow-bean-definition-overriding: true
+
+  mvc:
+    # 指定静态文件的路径
+    static-path-pattern: /static/**
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  cloud:
+    # 注册中心的相关配置
+    nacos:
+      discovery:
+        # 指定nacos的地址
+        server-addr: localhost:8848
+
+    # sentinel的相关配置
+    sentinel:
+      transport:
+        # 指定sentinel控制台的地址，控制台是懒加载，有流量才会显示
+        dashboard: localhost:8080
+      filter:
+        # 关闭对spring mvc端点的保护，一般用于开发中防干扰
+        enabled: true
+    # loadbalancer的相关配置
+    loadbalancer:
+      nacos:
+        enabled: true
+      cache:
+        enabled: true
+        caffeine:
+          spec: initialCapacity=500,expireAfterWrite=30s
+    # 配置参考：https://docs.spring.io/spring-cloud-stream/docs/3.1.0/reference/html/spring-cloud-stream.html#_configuration_options
+    stream:
+      binders:
+        rabbit:
+          type: rabbit
+          environment:
+            spring:
+              rabbitmq:
+                host: localhost
+                port: 5672
+                username: guest
+                password: guest
+        rocket:
+          type: rocket
+          environment:
+            spring:
+              rocket:
+                host: localhost
+                port: 9876
+                username:
+                password:
+      bindings:
+        # 从3.1以后官方就将基于注解的集成方式给废弃了，推荐使用基于函数模型的方式，所以那些乱七八糟的消息队列的注解都可以不用了
+        # <方法名> + -in- + <index>
+        ask-out-0:
+          binder: rabbit
+          destination: topic-ask
+        test-out-1:
+          binder: rocket
+          destination: topic-test
+
+# feign配置
+# 能通过配置文件配置的一律写在这里
+# 不能使用配置文件配置的，写在com.yunnk.springcloudproject.configuration.feign.GlobalFeignConfiguration
+feign:
+  sentinel:
+    # 启用feign整合sentinel，实现sentinel对feign请求的流控降级
+    enabled: true
+  client:
+    config:
+      # 全局配置
+      default:
+        # 配置日志级别
+        # NONE 不记录任何日志
+        # BASIC 记录请求方法、URL、响应状态以及执行时间
+        # HEADERS 在BASIC的基础上再记录请求头
+        # FULL 记录所有信息
+        loggerLevel: full
+        # 配置feign拦截器，用于设置token
+        requestInterceptors:
+        # - com.itmuch.contentcenter.feignclient.interceptor.TokenRelayRequestIntecepor
+        error-decoder: com.yunnk.springcloudproject.configuration.feign.CustomErrorDecoder
+  httpclient:
+    # 让feign使用apache httpclient做请求，而不是默认的urlConnection，提升性能
+    enabled: true
+    # feign的最大连接数
+    max-connections: 200
+    # feign单个路径的最大连接数
+    max-connections-per-route: 50
+
+# 配置seata-server
+seata:
+  config:
+    type: nacos
+    nacos:
+      serverAddr: 127.0.0.1:8848
+      group: seata-service-one #需要与前面创建的配置文件相对应
+      username: nacos
+      password: nacos
+  registry:
+    type: nacos
+    nacos:
+      serverAddr: 127.0.0.1:8848
+      group: seata-service-one
+      username: nacos
+      password: nacos
+  tx-service-group: seata-service-one
+  service:
+    vgroup-mapping:
+      seata-service-one: default
+    grouplist:
+      default: 192.168.1.1:8091

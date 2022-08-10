@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- springboot项目 -->
+    <parent>
+        <groupId>com.yunnk</groupId>
+        <artifactId>services</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <!-- 指定项目的基本信息 -->
+    <!-- 开发团队唯一标识 -->
+    <artifactId>service-two</artifactId><!-- 产品唯一标识 -->
+    <version>0.0.1-SNAPSHOT</version><!-- 产品版本 -->
+    <name>service-two</name><!-- 产品名称 -->
+    <description>service-two</description><!-- 产品描述 -->
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yunnk</groupId>
+            <artifactId>service-two-feign</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>

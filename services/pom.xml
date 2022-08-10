@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>services</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>services</name>
+
+    <!-- springboot项目 -->
+    <parent>
+        <groupId>com.yunnk</groupId>
+        <artifactId>parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <modules>
+        <module>service-one</module>
+        <module>service-two</module>
+    </modules>
+
+    <!-- 配置依赖 -->
+    <!--
+         scope:
+         compile 缺省值，会随一起发布，打包到项目中去
+         provided 此依赖将参与编译、测试、运行阶段，但是不会参与到打包中去
+         runtime 在运行时可用，此依赖无需参与项目编译，但是会参与项目的测试和运行，并且最终会参与打包
+         test 表示被依赖项目仅仅参与测试相关的工作，包括测试代码的编译，执行；比如Junit
+         system 与provided类似，但是它不会去maven仓库寻找依赖，而是在本地找，而systemPath标签将提供本地路径
+    -->
+    <!--
+         optional：true 防止将devtools依赖传递到其他模块中
+    -->
+    <dependencies>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+            <version>2021.0.1.0</version>
+        </dependency>
+
+        <!-- 整合loadbalancer作为客户端侧的负载均衡 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+        <!-- 整合openfeign，实现编程式的微服务调用 -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-httpclient</artifactId>
+        </dependency>
+
+        <!-- 整合actuator，用于应用监控 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!-- 使用spring data jpa作为持久层框架 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- spring mvc -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- 单元测试 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- 整合caffeine，供loadbalancer作为缓存使用 -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+
+        <!-- 整合公共jar包，公共jar包放置在Frog Artifactory maven 私服 -->
+        <dependency>
+            <groupId>com.yunnk</groupId>
+            <artifactId>common</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!-- 整合容错机制sentinel spring-cloud-alibaba-dependencies中已经指定了兼容的sentinel的版本号，所以此处无需指定版本，不然容易出现与openfeign的循环依赖 -->
+        <!-- sentinel控制台下载地址：https://github.com/alibaba/Sentinel/releases -->
+        <!-- sentinel规则持久化可参考：https://github.com/alibaba/Sentinel/wiki/在生产环境中使用-Sentinel -->
+        <!-- 本项目采用push模式实现规则持久化 -->
+        <!-- 控制台版本与sentinel-core一致 -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-core</artifactId>
+            <version>5.8.2</version>
+        </dependency>
+
+        <!-- https://github.com/apache/rocketmq -->
+        <!-- spring cloud 的子项目，消息队列的函数式编程 -->
+        <!-- https://docs.spring.io/spring-cloud-stream/docs/3.1.0/reference/html/spring-cloud-stream.html# -->
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba.cloud</groupId>-->
+<!--            <artifactId>spring-cloud-starter-stream-rocketmq</artifactId>-->
+<!--        </dependency>-->
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-stream</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-ui</artifactId>
+            <version>1.6.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+            <!-- 1.0版本后要移除alibaba-seata自带的seata-spring-boot-starter，因为自带的版本太低 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>io.seata</groupId>
+                    <artifactId>seata-spring-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-spring-boot-starter</artifactId>
+            <version>1.5.2</version>
+        </dependency>
+    </dependencies>
+
+    <!-- 配置插件 -->
+    <build>
+        <plugins>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.yunnk</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>parent</name>
+
+    <modules>
+        <module>services</module>
+        <module>common</module>
+        <module>feign</module>
+        <module>gateway</module>
+    </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding><!-- maven构建项目使用的编码，避免中文乱码 -->
+        <java.version>18</java.version><!-- 指定项目的JDK版本：JDK18 -->
+        <maven.compiler.target>18</maven.compiler.target>
+        <maven.compiler.source>18</maven.compiler.source>
+    </properties>
+
+    <!-- 配置依赖管理器，管理依赖版本，减小依赖冲突 -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- 整合spring cloud alibaba,spring cloud\spring cloud alibaba\spring boot三者版本对应关系可见：https://github.com/alibaba/spring-cloud-alibaba/wiki/%E7%89%88%E6%9C%AC%E8%AF%B4%E6%98%8E -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.6.7</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>2021.0.1</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>2021.0.1.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- 配置依赖 -->
+    <!--
+         scope:
+         compile 缺省值，会随一起发布，打包到项目中去
+         provided 此依赖将参与编译、测试、运行阶段，但是不会参与到打包中去
+         runtime 在运行时可用，此依赖无需参与项目编译，但是会参与项目的测试和运行，并且最终会参与打包
+         test 表示被依赖项目仅仅参与测试相关的工作，包括测试代码的编译，执行；比如Junit
+         system 与provided类似，但是它不会去maven仓库寻找依赖，而是在本地找，而systemPath标签将提供本地路径
+    -->
+    <!--
+         optional：true 防止将devtools依赖传递到其他模块中
+    -->
+    <dependencies>
+        <!-- 配置文件编码支持 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Lombok，简化代码 -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <!-- 推送maven私服 -->
+    <distributionManagement>
+        <repository>
+            <id>central</id>
+            <name>SpringCloudProjectCommon</name>
+            <url>http://localhost:8082/artifactory/libs-snapshot-local/</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>SpringCloudProjectCommon</name>
+            <url>http://localhost:8082/artifactory/libs-snapshot-local/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <!-- 配置插件 -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.6.8</version>
+            </plugin>
+        </plugins>
+    </build>
+</project>
